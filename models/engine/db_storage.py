@@ -35,6 +35,13 @@ class DBStorage:
         depending on the class, if the class was not provided then,
         it will return all types objects"""
 
+        if cls:
+            if isinstance(cls, str):
+                cls = eval(cls)
+
+            return {"{}.{}".format(type(v), v.id): v
+                    for v in self.__session.query(cls)}
+
         from models.base_model import BaseModel
         from models.user import User
         from models.place import Place
@@ -49,17 +56,17 @@ class DBStorage:
             'Review': Review
         }
 
-        if cls:
-            if isinstance(cls, str):
-                cls = classes.get(cls)
-            return self.__session.query(cls).all() if cls else {}
-
         _instances = {}
 
-        for _cls, _type in classes.items():
-            _instances.update(
-                        {"{}.{}".format(type(_obj).__name__, _obj.id):
-                             _obj for _obj in self.__session.query(_cls)})
+        for _cls in Base.registry._class_registry.data.keys():
+            if _cls in classes and hasattr(
+                    eval(_cls),
+                    '__tablename__') and issubclass(
+                    eval(_cls),
+                    Base):
+                for _obj in self.__session.query(eval(_cls)):
+                    _instances.update(
+                        {"{}.{}".format(type(_obj).__name__, _obj.id): _obj})
 
         return _instances
 

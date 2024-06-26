@@ -1,5 +1,4 @@
 -- Creates a database and a user o manage this database
-USE hbnb_dev_db;
 
 CREATE TABLE IF NOT exists states
 (
