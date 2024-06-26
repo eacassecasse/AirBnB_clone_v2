@@ -30,11 +30,14 @@ class BaseModel:
             self.created_at = datetime.now()
             self.updated_at = datetime.now()
         else:
-            kwargs['updated_at'] = datetime.strptime(kwargs['updated_at'],
-                                                     '%Y-%m-%dT%H:%M:%S.%f')
-            kwargs['created_at'] = datetime.strptime(kwargs['created_at'],
-                                                     '%Y-%m-%dT%H:%M:%S.%f')
-            del kwargs['__class__']
+            created = kwargs.get('created_at', '')
+            updated = kwargs.get('updated_at', '')
+
+            kwargs['updated_at'] = datetime.strptime(
+                updated, '%Y-%m-%dT%H:%M:%S.%f') if updated else datetime.now()
+            kwargs['created_at'] = datetime.strptime(
+                created, '%Y-%m-%dT%H:%M:%S.%f') if updated else datetime.now()
+            kwargs.pop('__class__', None)
             self.__dict__.update(kwargs)
 
     def __str__(self):
