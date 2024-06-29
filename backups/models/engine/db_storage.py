@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 """This module defines a class to manage database storage for hbnb clone"""
-
+import json
 import os
+from collections import defaultdict
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
@@ -10,12 +11,7 @@ from models.base_model import Base
 
 
 class DBStorage:
-    """This class manages storage of hbnb models
-
-    Attributes:
-        __engine (sqlalchemy.Engine): The working SQLAlchemy engine.
-        __session (sqlalchemy.Session): The working SQLAlchemy session.
-    """
+    """This class manages storage of hbnb models"""
     __engine = None
     __session = None
 
@@ -24,7 +20,7 @@ class DBStorage:
         user = os.getenv("HBNB_MYSQL_USER")
         pwd = os.getenv("HBNB_MYSQL_PWD")
         db = os.getenv("HBNB_MYSQL_DB")
-        host = os.getenv("HBNB_MYSQL_HOST")
+        host = os.getenv("HBNB_MYSQL_HOST", default='localhost')
         env = os.getenv("HBNB_ENV")
 
         self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'.
@@ -38,6 +34,13 @@ class DBStorage:
         """Query a return all objects from the database
         depending on the class, if the class was not provided then,
         it will return all types objects"""
+
+        if cls:
+            if isinstance(cls, str):
+                cls = eval(cls)
+
+            return {"{}.{}".format(type(v), v.id): v
+                    for v in self.__session.query(cls)}
 
         from models.base_model import BaseModel
         from models.user import User
@@ -53,17 +56,19 @@ class DBStorage:
             'Review': Review
         }
 
-        if cls is None:
-            instances = []
-            for cls_type in classes.values():
-                instances.extend(self.__session.query(cls_type).all())
-        else:
-            if isinstance(cls, str):
-                cls = classes.get(cls)
-            instances = self.__session.query(cls).all()
+        _instances = {}
 
-        return {"{}.{}".format(type(_inst).__name__, _inst.id):
-                    _inst for _inst in instances}
+        for _cls in Base.registry._class_registry.data.keys():
+            if _cls in classes and hasattr(
+                    eval(_cls),
+                    '__tablename__') and issubclass(
+                    eval(_cls),
+                    Base):
+                for _obj in self.__session.query(eval(_cls)):
+                    _instances.update(
+                        {"{}.{}".format(type(_obj).__name__, _obj.id): _obj})
+
+        return _instances
 
     def new(self, obj):
         """Adds new object into the current database session"""
@@ -77,14 +82,14 @@ class DBStorage:
         """Loads storage dictionary from file"""
         Base.metadata.create_all(self.__engine)
 
-        factory = sessionmaker(bind=self.__engine,
-                               expire_on_commit=False)
+        factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
         Session = scoped_session(factory)
         self.__session = Session()
 
     def delete(self, obj=None):
         """ Deletes an object from the database """
-        self.__session.delete(obj)
+        if obj:
+            self.__session.delete(obj)
 
     def close(self):
         """ Closes the storage engine """
