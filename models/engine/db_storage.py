@@ -54,16 +54,15 @@ class DBStorage:
         }
 
         if cls is None:
-            instances = []
+            objects = []
             for cls_type in classes.values():
-                instances.extend(self.__session.query(cls_type).all())
+                objects.extend(self.__session.query(cls_type).all())
         else:
             if isinstance(cls, str):
                 cls = classes.get(cls)
-            instances = self.__session.query(cls).all()
+            objects = self.__session.query(cls).all()
 
-        return {"{}.{}".format(type(_inst).__name__, _inst.id):
-                    _inst for _inst in instances}
+        return {"{}.{}".format(type(o).__name__, o.id): o for o in objects}
 
     def new(self, obj):
         """Adds new object into the current database session"""
