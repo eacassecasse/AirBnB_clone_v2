@@ -26,13 +26,13 @@ class TestHBNBCommand(unittest.TestCase):
         self.assertTrue(HBNBCommand().onecmd("EOF"))
 
     def test_help_quit(self):
-        txt = "Exits the program with formatting\n"
+        txt = "Exits the program with formatting"
         with patch("sys.stdout", new=StringIO()) as output:
             HBNBCommand().onecmd("help quit")
             self.assertEqual(txt, output.getvalue().strip())
 
     def test_help_EOF(self):
-        txt = "Exits the program with formatting\n"
+        txt = "Exits the program with formatting"
         with patch("sys.stdout", new=StringIO()) as output:
             HBNBCommand().onecmd("help EOF")
             self.assertEqual(txt, output.getvalue().strip())
@@ -88,7 +88,7 @@ class TestHBNBCommand(unittest.TestCase):
 
     def test_create_with_attributes(self):
         with patch("sys.stdout", new=StringIO()) as output:
-            HBNBCommand().onecmd('create User name="Edmilson_cassecasse" age=25 height=5.9')
+            HBNBCommand().onecmd('create User name="Edmilson_Cassecasse" age=25 height=5.9')
             instance_id = output.getvalue().strip()
             key = f"User.{instance_id}"
             self.assertIn(key, storage.all().keys())
@@ -112,7 +112,7 @@ class TestHBNBCommand(unittest.TestCase):
 
     def test_create_with_escaped_quotes_and_underscores(self):
         with patch("sys.stdout", new=StringIO()) as output:
-            HBNBCommand().onecmd('create User description="A_house_with_a_big_yard" quote="She_said_\\"Hello!\\""')
+            HBNBCommand().onecmd('create User description="A_house_with_a_big_yard" quote="She_said_\"Hello!\""')
             instance_id = output.getvalue().strip()
             key = f"User.{instance_id}"
             self.assertIn(key, storage.all().keys())
