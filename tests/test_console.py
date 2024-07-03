@@ -16,7 +16,6 @@ from models.user import User
 from tests import clear_stream
 
 
-
 class TestHBNBCommand(unittest.TestCase):
     """Represents the test class for the HBNBCommand class.
     """
