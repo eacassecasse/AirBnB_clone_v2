@@ -13,7 +13,7 @@ from console import HBNBCommand
 from models import storage
 from models.base_model import BaseModel
 from models.user import User
-from tests.test_utils import clear_stream
+from tests import clear_stream
 
 
 class TestHBNBCommand(unittest.TestCase):
@@ -68,7 +68,7 @@ class TestHBNBCommand(unittest.TestCase):
             cursor.execute('SELECT * FROM users WHERE id="{}"'.format(mdl_id))
             result = cursor.fetchone()
             self.assertTrue(result is not None)
-            self.assertIn('edmilsonb1327@gmail.com', result)
+            self.assertIn('2015edmilsonb1327@gmail.com', result)
             self.assertIn('123', result)
             cursor.close()
             dbc.close()
