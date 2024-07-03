@@ -191,7 +191,7 @@ class TestHBNBCommand(unittest.TestCase):
     def test_count(self):
         for item in self.__classes:
             with patch('sys.stdout', new=StringIO()) as output:
-                HBNBCommand().onecmd(item + ".count()")
+                HBNBCommand().onecmd("count " + item)
                 count = output.getvalue().strip()
                 objects = []
                 for obj in storage.all().values():
