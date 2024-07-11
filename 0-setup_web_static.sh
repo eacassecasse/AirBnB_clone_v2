@@ -8,7 +8,14 @@ apt-get install -y nginx
 # Create necessary directories and a simple index.html file
 mkdir -p /data/web_static/releases/test/
 mkdir -p /data/web_static/shared/
-echo "Hello World! Deploying static web" > /data/web_static/releases/test/index.html
+echo "
+<html>
+  <head>
+  </head>
+  <body>
+    Holberton School
+  </body>
+</html>" > /data/web_static/releases/test/index.html
 
 # Create a symbolic link to the current release
 ln -sf /data/web_static/releases/test/ /data/web_static/current
