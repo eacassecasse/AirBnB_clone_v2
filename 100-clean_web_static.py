@@ -11,6 +11,7 @@ from fabric.api import local
 env.hosts = ["54.157.136.194", "100.25.134.41"]
 env.user = "ubuntu"
 
+
 def do_pack():
     """
     Create a tar gzipped archive of the directory web_static.
@@ -102,13 +103,21 @@ def do_clean(number=0):
     """
     number = 1 if int(number) == 0 else int(number)
 
+    # Delete local archives
     archives = sorted(os.listdir("versions"))
-    [archives.pop() for i in range(number)]
+    print(f"Local archives before deletion: {archives}")
+    archives_to_delete = archives[:-number]
+    print(f"Local archives to delete: {archives_to_delete}")
     with lcd("versions"):
-        [local("rm ./{}".format(a)) for a in archives]
+        for archive in archives_to_delete:
+            local(f"rm -f {archive}")
 
+    # Delete remote archives
     with cd("/data/web_static/releases"):
         archives = run("ls -tr").split()
         archives = [a for a in archives if "web_static_" in a]
-        [archives.pop() for i in range(number)]
-        [run("rm -rf ./{}".format(a)) for a in archives]
+        print(f"Remote archives before deletion: {archives}")
+        archives_to_delete = archives[:-number]
+        print(f"Remote archives to delete: {archives_to_delete}")
+        for archive in archives_to_delete:
+            run(f"rm -rf {archive}")
