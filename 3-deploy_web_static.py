@@ -86,7 +86,7 @@ def do_deploy(archive_path):
 def deploy():
     """Create and distribute an archive to a web server."""
     archive = do_pack()
-    
+
     if archive is None:
         return False
 
