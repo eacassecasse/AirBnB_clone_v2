@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-Fabfile to generate a .tgz archive from the contents of web_static directory.
+Fabric script to create and distribute an archive to web servers.
 """
 
 import os
@@ -19,24 +19,21 @@ def do_pack():
     Returns:
         str: Path to the created archive if successful, None otherwise.
     """
-    # Get current UTC time
-    dt = datetime.utcnow()
+    # Generate a timestamp
+    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
 
-    # Define file name with timestamp
-    file_name = "versions/web_static_{}{}{}{}{}{}.tgz".format(dt.year,
-                                                              dt.month,
-                                                              dt.day,
-                                                              dt.hour,
-                                                              dt.minute,
-                                                              dt.second)
+    # Define the file name
+    file_name = "versions/web_static_{}.tgz".format(timestamp)
 
-    # Create 'versions' directory if not exists
+    # Create 'versions' directory if it doesn't exist
     if not os.path.exists("versions"):
         os.makedirs("versions")
 
     # Create the tar gzipped archive
     command = "tar -cvzf {} web_static".format(file_name)
-    if local(command).failed:
+    result = local(command)
+
+    if result.failed:
         return None
 
     return file_name
@@ -51,36 +48,27 @@ def do_deploy(archive_path):
         If the file doesn't exist at archive_path or an error occurs - False.
         Otherwise - True.
     """
-    if os.path.isfile(archive_path) is False:
+    if not os.path.isfile(archive_path):
         return False
+
     file = archive_path.split("/")[-1]
     name = file.split(".")[0]
 
-    if put(archive_path, "/tmp/{}".format(file)).failed is True:
+    try:
+        path = "/data/web_static/releases/"
+        put(archive_path, "/tmp/{}".format(file))
+        run("rm -rf {}{}/".format(path, name))
+        run("mkdir -p {}{}/".format(path, name))
+        run("tar -xzf /tmp/{} -C {}{}/".format(file, path, name))
+        run("rm /tmp/{}".format(file))
+        run("mv {}{}/web_static/* {}{}/".format(path, name, path, name))
+        run("rm -rf {}{}/web_static".format(path, name))
+        run("rm -rf /data/web_static/current")
+        run("ln -s {}{}/ /data/web_static/current".format(path, name))
+        return True
+    except Exception as e:
+        print(f"Deployment failed: {e}")
         return False
-    if run("rm -rf /data/web_static/releases/{}/".
-           format(name)).failed is True:
-        return False
-    if run("mkdir -p /data/web_static/releases/{}/".
-           format(name)).failed is True:
-        return False
-    if run("tar -xzf /tmp/{} -C /data/web_static/releases/{}/".
-           format(file, name)).failed is True:
-        return False
-    if run("rm /tmp/{}".format(file)).failed is True:
-        return False
-    if run("mv /data/web_static/releases/{}/web_static/* "
-           "/data/web_static/releases/{}/".format(name, name)).failed is True:
-        return False
-    if run("rm -rf /data/web_static/releases/{}/web_static".
-           format(name)).failed is True:
-        return False
-    if run("rm -rf /data/web_static/current").failed is True:
-        return False
-    if run("ln -s /data/web_static/releases/{}/ /data/web_static/current".
-           format(name)).failed is True:
-        return False
-    return True
 
 
 def deploy():

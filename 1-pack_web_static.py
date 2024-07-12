@@ -1,11 +1,15 @@
 #!/usr/bin/python3
 """
-Fabfile to generate a .tgz archive from the contents of web_static directory.
+Fabric script to create and distribute an archive to web servers.
 """
 
 import os
 from datetime import datetime
-from fabric.api import local
+from fabric.api import env, local, put, run
+
+# Hosts IP and user of the web server web-01 and web-02
+env.hosts = ["54.157.136.194", "100.25.134.41"]
+env.user = "ubuntu"
 
 
 def do_pack():
@@ -15,24 +19,21 @@ def do_pack():
     Returns:
         str: Path to the created archive if successful, None otherwise.
     """
-    # Get current UTC time
-    dt = datetime.utcnow()
+    # Generate a timestamp
+    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
 
-    # Define file name with timestamp
-    file_name = "versions/web_static_{}{}{}{}{}{}.tgz".format(dt.year,
-                                                              dt.month,
-                                                              dt.day,
-                                                              dt.hour,
-                                                              dt.minute,
-                                                              dt.second)
+    # Define the file name
+    file_name = "versions/web_static_{}.tgz".format(timestamp)
 
-    # Create 'versions' directory if not exists
+    # Create 'versions' directory if it doesn't exist
     if not os.path.exists("versions"):
         os.makedirs("versions")
 
     # Create the tar gzipped archive
     command = "tar -cvzf {} web_static".format(file_name)
-    if local(command).failed:
+    result = local(command)
+
+    if result.failed:
         return None
 
     return file_name
