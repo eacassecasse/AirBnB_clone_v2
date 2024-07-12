@@ -5,7 +5,7 @@ Fabfile to generate a .tgz archive from the contents of web_static directory.
 
 import os
 from datetime import datetime
-from fabric.api import env, local
+from fabric.api import env, local, put, run
 
 # Hosts IP and user of the web server web-01 and web-02
 env.hosts = ["54.157.136.194", "100.25.134.41"]
