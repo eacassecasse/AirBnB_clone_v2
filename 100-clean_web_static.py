@@ -31,7 +31,7 @@ def do_clean(number=0):
     # Local cleanup
     gotodir = 'cd versions && ls -t'
     print(f"Cleaning local archives, keeping {number-1} most recent.")
-    local('{}'.gotodir)
+    local('{}'.format(gotodir))
     local('{} | tail -n +{} | xargs -r rm -rf'.format(gotodir, number))
     local('cd versions && ls -t')
 
