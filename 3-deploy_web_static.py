@@ -3,14 +3,15 @@
 Fabric script to create and distribute an archive to web servers.
 """
 
+import os
 from os.path import exists
 from datetime import datetime
-from fabric.api import env, local, put, sudo
+from fabric.api import env, local, put, sudo, runs_once
 
 # Hosts IP and user of the web server web-01 and web-02
 env.hosts = ["54.157.136.194", "100.25.134.41"]
 
-
+@runs_once
 def do_pack():
     """
     Create a tar gzipped archive of the directory web_static.
@@ -36,7 +37,6 @@ def do_pack():
         return None
 
     return file_name
-
 
 def do_deploy(archive_path):
     """Distributes an archive to a web server.
@@ -66,9 +66,8 @@ def do_deploy(archive_path):
         return False
 
 def deploy():
-    """Creates and distributes an archive to web servers"""
-    try:
-        file_path = do_pack()
-        return do_deploy(file_path)
-    except:
+    """creates and distributes an archive to the web servers"""
+    archive_path = do_pack()
+    if archive_path is None:
         return False
+    return do_deploy(archive_path)
