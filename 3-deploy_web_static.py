@@ -29,6 +29,8 @@ def do_pack():
     if not os.path.exists("versions"):
         os.makedirs("versions")
 
+    print("Packing web_static to {}".format(file_name))
+
     # Create the tar gzipped archive
     command = "tar -cvzf {} web_static".format(file_name)
     result = local(command)
@@ -61,6 +63,8 @@ def do_deploy(archive_path):
         sudo('rm -rf {}{}/web_static'.format(path, no_ext))
         sudo('rm -rf /data/web_static/current')
         sudo('ln -s {}{}/ /data/web_static/current'.format(path, no_ext))
+
+        print("New version deployed!")
         return True
     except:
         return False
