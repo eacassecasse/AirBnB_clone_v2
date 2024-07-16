@@ -11,6 +11,7 @@ from fabric.api import env, local, put, sudo, runs_once
 # Hosts IP and user of the web server web-01 and web-02
 env.hosts = ["54.157.136.194", "100.25.134.41"]
 
+
 @runs_once
 def do_pack():
     """
@@ -40,6 +41,7 @@ def do_pack():
 
     return file_name
 
+
 def do_deploy(archive_path):
     """Distributes an archive to a web server.
 
@@ -66,8 +68,9 @@ def do_deploy(archive_path):
 
         print("New version deployed!")
         return True
-    except:
+    except Exception as e:
         return False
+
 
 def deploy():
     """creates and distributes an archive to the web servers"""

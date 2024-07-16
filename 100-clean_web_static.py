@@ -29,14 +29,15 @@ def do_clean(number=0):
         number += 1
 
     # Local cleanup
+    gotodir = 'cd versions && ls -t'
     print(f"Cleaning local archives, keeping {number-1} most recent.")
-    local('cd versions && ls -t')
-    local('cd versions && ls -t | tail -n +{} | xargs -r rm -rf'.format(number))
+    local('{}'.gotodir)
+    local('{} | tail -n +{} | xargs -r rm -rf'.format(gotodir, number))
     local('cd versions && ls -t')
 
     # Remote cleanup
     path = '/data/web_static/releases'
-    print(f"Cleaning remote archives at {path}, keeping {number-1} most recent.")
+    print("Remote cleanup at {}, {} most recent only.".format(path, number-1))
     sudo('ls -t {}'.format(path))
     sudo('cd {} && ls -t | tail -n +{} | xargs -r rm -rf'.format(path, number))
     sudo('ls -t {}'.format(path))
