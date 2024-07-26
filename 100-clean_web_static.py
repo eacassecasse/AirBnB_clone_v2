@@ -1,13 +1,14 @@
 #!/usr/bin/python3
 """
-Fabfile to delete out-of-date archives.
+Fabfile to generate a .tgz archive from the contents of web_static directory.
 """
 
 import os
-from fabric.api import env, local, run
+from datetime import datetime
+from fabric.api import env, local, sudo
 
-# Define remote hosts
-env.hosts = ["34.207.154.215", "18.210.33.217"]
+# Hosts IP and user of the web server web-01 and web-02
+env.hosts = ["54.157.136.194", "100.25.134.41"]
 
 
 def do_clean(number=0):
@@ -20,21 +21,23 @@ def do_clean(number=0):
     number is 2, keeps the most and second-most recent archives,
     etc.
     """
-    # Ensure number is an integer
     number = int(number)
 
-    # Sort the list of archives
-    archives = sorted(os.listdir("versions"))
+    if number == 0:
+        number = 2
+    else:
+        number += 1
 
-    # Remove specified number of oldest archives
-    for _ in range(number):
-        if archives:
-            local("rm ./versions/{}".format(archives.pop(0)))
+    # Local cleanup
+    gotodir = 'cd versions && ls -t'
+    print(f"Cleaning local archives, keeping {number-1} most recent.")
+    local('{}'.format(gotodir))
+    local('{} | tail -n +{} | xargs -r rm -rf'.format(gotodir, number))
+    local('cd versions && ls -t')
 
-    # Connect to the server and remove out-of-date archives
-    with cd("/data/web_static/releases"):
-        archives = run("ls -tr").split()
-        archives = [a for a in archives if "web_static_" in a]
-        for _ in range(number):
-            if archives:
-                run("rm -rf ./{}".format(archives.pop(0))))
+    # Remote cleanup
+    path = '/data/web_static/releases'
+    print("Remote cleanup at {}, {} most recent only.".format(path, number-1))
+    sudo('ls -t {}'.format(path))
+    sudo('cd {} && ls -t | tail -n +{} | xargs -r rm -rf'.format(path, number))
+    sudo('ls -t {}'.format(path))
