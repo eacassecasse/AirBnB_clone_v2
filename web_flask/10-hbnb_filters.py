@@ -2,7 +2,8 @@
 """
 Flask Web Application for HBnB Filters
 
-This script starts a Flask web application that provides an HTML page for HBnB filters.
+This script starts a Flask web application that provides an HTML
+page for HBnB filters.
 
 Attributes:
     app (Flask): The Flask application object.

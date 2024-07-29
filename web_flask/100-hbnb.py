@@ -20,7 +20,8 @@ def hbnb():
     Renders the main HBnB home page.
 
     Returns:
-        str: HTML page containing HBnB home page with filters for States, Amenities, and Places.
+        str: HTML page containing HBnB home page with filters for States,
+             Amenities, and Places.
     """
     states = storage.all("State")
     amenities = storage.all("Amenity")

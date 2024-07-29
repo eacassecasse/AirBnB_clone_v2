@@ -2,7 +2,8 @@
 """
 Flask Web Application for State Information
 
-This script starts a Flask web application that provides HTML pages with information about State objects.
+This script starts a Flask web application that provides HTML
+pages with information about State objects.
 
 Attributes:
     app (Flask): The Flask application object.
@@ -29,13 +30,15 @@ def states():
 @app.route("/states/<id>", strict_slashes=False)
 def states_id(id):
     """
-    Renders an HTML page displaying information about the state with the given <id>.
+    Renders an HTML page displaying information about the state with
+    the given <id>.
 
     Args:
         id (str): The ID of the state to display.
 
     Returns:
-        str: HTML page with information about the state if it exists, otherwise a blank page.
+        str: HTML page with information about the state if it exists,
+             otherwise a blank page.
     """
     for state in storage.all("State").values():
         if state.id == id:

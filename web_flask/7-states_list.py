@@ -5,6 +5,7 @@ from flask import Flask, render_template
 
 app = Flask(__name__)
 
+
 @app.route("/states_list", strict_slashes=False)
 def states_list():
     """
@@ -13,7 +14,8 @@ def states_list():
     Renders an HTML page displaying a list of all State objects in DBStorage.
 
     Attributes:
-        strict_slashes (bool): Whether to enforce trailing slashes on the route URL.
+        strict_slashes (bool): Whether to enforce trailing slashes on
+        the route URL.
 
     Returns:
         str: HTML page with a list of states sorted by name.
