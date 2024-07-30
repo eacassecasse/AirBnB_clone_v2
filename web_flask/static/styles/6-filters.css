@@ -18,7 +18,7 @@
 	border-right: 1px solid #DDDDDD;
 }
 
-.filter_amenities {
+.amenities {
 	display: inline;
 	vertical-align: middle;
 	height: 100%;
@@ -33,6 +33,10 @@
 	display: none;
 	background-color: #FAFAFA;
 	width: 100%;
+	height: 300px;
+	max-height: 300px;
+	overflow-y: scroll;
+	margin: 0;
 
 	margin-left: -1px;
 	margin-top: 8px;
@@ -40,13 +44,18 @@
 
 	border: 1px solid #DDDDDD;
 	border-radius: 4px;
+	box-sizing: border-box;
+}
+
+.popover::-webkit-scrollbar {
+	display: none;
 }
 
 .locations:hover .popover {
 	display: inline-block;
 }
 
-.filter_amenities:hover .popover {
+.amenities:hover .popover {
 	display: inline-block;
 }
 
