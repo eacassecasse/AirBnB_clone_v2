@@ -33,6 +33,14 @@ article {
 	width: 100%;
 }
 
+.headline h2 {
+	display: flex;
+	margin-right: 84px;
+	text-align: left;
+	justify-content: flex-start;
+	line-height: 1.05;
+}
+
 .price_by_night {
 	display: flex;
 	justify-content: center;
